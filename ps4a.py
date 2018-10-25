@@ -34,6 +34,7 @@ def loadWords():
     for line in inFile:
         wordList.append(line.strip().lower())
     print("  ", len(wordList), "words loaded.")
+    inFile.close()
     return wordList
 
 
@@ -47,10 +48,11 @@ def getFrequencyDict(sequence):
     return: dictionary
     """
     # freqs: dictionary (element_type -> int)
-    freq = {}
-    for x in sequence:
-        freq[x] = freq.get(x, 0) + 1
-    return freq
+    return {k: sequence.count(k) for k in set(sequence)}
+    # freq = {}
+    # for x in sequence:
+    #     freq[x] = freq.get(x, 0) + 1
+    # return freq
 
 
 # (end of helper code)
@@ -74,7 +76,8 @@ def getWordScore(word, n):
     n: integer (HAND_SIZE; i.e., hand size required for additional points)
     returns: int >= 0
     """
-    # TO DO ... <-- Remove this comment when you code this function
+    word_len = len(word)
+    return sum(SCRABBLE_LETTER_VALUES[letter] for letter in word) * word_len + 50 * (word_len == n)
 
 
 #
@@ -85,7 +88,7 @@ def displayHand(hand):
     Displays the letters currently in the hand.
 
     For example:
-    >>> displayHand({'a':1, 'x':2, 'l':3, 'e':1})
+    displayHand({'a':1, 'x':2, 'l':3, 'e':1})
     Should print out something like:
        a x x l l l e
     The order of the letters is unimportant.
@@ -114,14 +117,14 @@ def dealHand(n):
     returns: dictionary (string -> int)
     """
     hand = {}
-    numVowels = n // 3
+    numVowels = round(n / 3)
+    LETTERS = string.ascii_lowercase
 
     for i in range(numVowels):
         x = VOWELS[random.randrange(0, len(VOWELS))]
         hand[x] = hand.get(x, 0) + 1
-
     for i in range(numVowels, n):
-        x = CONSONANTS[random.randrange(0, len(CONSONANTS))]
+        x = LETTERS[random.randrange(0, len(LETTERS))]
         hand[x] = hand.get(x, 0) + 1
 
     return hand
@@ -147,6 +150,10 @@ def updateHand(hand, word):
     returns: dictionary (string -> int)
     """
     # TO DO ... <-- Remove this comment when you code this function
+    hand_copy = {}
+    for letter in word:
+        hand_copy[letter] -= 1
+    return {k: v for k, v in hand_copy.items() if v > 0}  # remove empty keys
 
 
 #
@@ -163,7 +170,15 @@ def isValidWord(word, hand, wordList):
     hand: dictionary (string -> int)
     wordList: list of lowercase strings
     """
-    # TO DO ... <-- Remove this comment when you code this function
+    if word in wordList:
+        for letter in word:
+            # is letter is in hand and enough copies to make word
+            if not hand.get(letter) or hand[letter] - word.count(letter) < 0:
+                    return False  # no there isn't
+        return True  # all letters checked all ok.
+    else:
+        # word is not in list
+        return False
 
 
 #
@@ -247,7 +262,7 @@ def playGame(wordList):
 
     2) When done playing the hand, repeat from step 1
     """
-    # TO DO ... <-- Remove this comment when you code this function
+    # TODO ... <-- Remove this comment when you code this function
     print("playGame not yet implemented.")  # <-- Remove this line when you code the function
 
 
