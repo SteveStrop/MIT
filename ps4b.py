@@ -146,37 +146,54 @@ def playGame(wordList):
     # initialise hand length (number of letter dealt to each player)
     n = 7
     #  initialise dictionary of functions to call for user and computer players
-    player_func = {'c': compPlayHand, 'u': playHand}
+    player_func = {'comp': compPlayHand, 'user': playHand}
     # initialise user and computer scores
-    score = {'u': 0, 'c': 0}
+    score = {'comp': 0, 'user': 0}
     # create dictionary of word scores to speed up computer player searches
     word_dict = {word: getWordScore(word, n) for word in wordList}
     # get a starting hand
     hand = dealHand(n)
     old_hand = hand.copy()
     # play the game until user hits e to exit
+    # while True:
+    #     player_response = get_user_input(
+    #         prompt="Type (n)ew hand, (r)eplay the last hand, or (e)xit",
+    #         valid_check="nre",
+    #         retry_prompt="Sorry I didn't get that. Try again with n, r, or e."
+    #     )
+    #     if player_response == 'e':
+    #         return f"Bye!\nYour final score is {score['u']}\nComputer's score is {score['c']}"
+    #     player = get_user_input(  # either (u)ser or(c)omputer
+    #         prompt="Who's go is it (u)ser or (c)omputer: ",
+    #         valid_check="uc",
+    #         retry_prompt="Sorry I didn't get that. Try again with u or c."
+    #     )
+    #     # new hand
+    #     if player_response == 'n':
+    #         old_hand = hand.copy()
+    #         score[player] += player_func[player](hand, word_dict, n)
+    #         # generate new hand for NEXT round
+    #         hand = dealHand(n)
+    #     # replay hand
+    #     elif player_response == 'r':
+    #         score[player] += player_func[player](old_hand, word_dict, n)
     while True:
         player_response = get_user_input(
-            prompt="Type (n)ew hand, (r)eplay the last hand, or (e)xit",
-            valid_check="nre",
-            retry_prompt="Sorry I didn't get that. Try again with n, r, or e."
+            prompt="Type (n)ew hand or (e)xit",
+            valid_check="ne",
+            retry_prompt="Sorry I didn't get that. Try again with n or e."
         )
         if player_response == 'e':
-            return f"Bye!\nYour final score is {score['u']}\nComputer's score is {score['c']}"
-        player = get_user_input(  # either (u)ser or(c)omputer
-            prompt="Who's go is it (u)ser or (c)omputer: ",
-            valid_check="uc",
-            retry_prompt="Sorry I didn't get that. Try again with u or c."
-        )
-        # new hand
-        if player_response == 'n':
-            old_hand = hand.copy()
-            score[player] += player_func[player](hand, word_dict, n)
-            # generate new hand for NEXT round
-            hand = dealHand(n)
-        # replay hand
-        elif player_response == 'r':
-            score[player] += player_func[player](old_hand, word_dict, n)
+            return f"Bye!\nYour final score is {score['user']}\nComputer's score is {score['comp']}"
+        # user hand
+        print("\n"*5,"-" * 25, "YOUR TURN", "-" * 25, sep="")
+        old_hand = hand.copy()
+        score['user'] += player_func['user'](hand, word_dict, n)
+        # generate new hand for NEXT round
+        hand = dealHand(n)
+        # computer hand
+        print("-"*25,"COMPUTER'S TURN","-"*25,sep="")
+        score['comp'] += player_func['comp'](old_hand, word_dict, n)
 
 
 #

@@ -4,7 +4,7 @@ import random
 import string
 
 VOWELS = 'aeiou'
-CONSONANTS = 'bcdfghjklmnpqrstvwxyz'
+LETTERS = string.ascii_lowercase
 HAND_SIZE = 7
 
 SCRABBLE_LETTER_VALUES = {
@@ -118,7 +118,6 @@ def dealHand(n):
     """
     hand = {}
     numVowels = round(n / 3)
-    LETTERS = string.ascii_lowercase
 
     for i in range(numVowels):
         x = VOWELS[random.randrange(0, len(VOWELS))]
