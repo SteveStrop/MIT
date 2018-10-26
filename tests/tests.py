@@ -56,6 +56,7 @@ class Ps4aTest(unittest.TestCase):
             ("scored", 7): 54,
             ("outgnaw", 7): 127,
             ("fork", 7): 44,
+            ("bawn",7) : 36,
             ("fork", 4): 94
         }
         for (word, n) in words.keys():

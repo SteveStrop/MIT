@@ -88,7 +88,7 @@ def compPlayHand(hand, word_dict, n):
             # Otherwise (the word is valid):
             else:
                 # Tell the user how many points the word earned, and the updated total score
-                score = getWordScore(word, n)
+                score = word_dict[word]
                 totalScore += score
                 print('"' + word + '" earned ' + str(score) + ' points. Total: ' + str(totalScore) + ' points')
                 # Update hand and show the updated hand to the user
@@ -97,6 +97,22 @@ def compPlayHand(hand, word_dict, n):
     # Game is over (user entered a '.' or ran out of letters), so tell user the total score
     print('Total score: ' + str(totalScore) + ' points.')
     return totalScore
+
+
+def get_user_input(prompt="", retry_prompt="", valid_check=""):
+    """ Prompt user for input. Normalise input to lower case.
+    Check given input against valid_check and re prompts with retry_prompt if user input is not valid.
+    Repeat unit user gives valid input
+    :param prompt: a string displayed to the user
+    :param valid_check: a string containing all valid inputs normalised to lower case
+    :param retry_prompt: a string displayed to the user if input is invalid
+    :returns a string containing valid input normalised to lower case"""
+    print(prompt, end=" ")
+    while True:
+        user_input = input().lower()
+        if user_input and user_input in valid_check:
+            return user_input
+        print(retry_prompt, end=" ")
 
 
 #
@@ -131,33 +147,36 @@ def playGame(wordList):
     n = 7
     #  initialise dictionary of functions to call for user and computer players
     player_func = {'c': compPlayHand, 'u': playHand}
-    # initilaise user and computer scores
-    final_score = {'u': 0, 'c': 0}
+    # initialise user and computer scores
+    score = {'u': 0, 'c': 0}
     # create dictionary of word scores to speed up computer player searches
     word_dict = {word: getWordScore(word, n) for word in wordList}
     # get a starting hand
     hand = dealHand(n)
     old_hand = hand.copy()
-    # play the game
+    # play the game until user hits e to exit
     while True:
-        player_response = input(" Type (n)ew hand, (r)eplay the last hand, or (e)xit").lower()
+        player_response = get_user_input(
+            prompt="Type (n)ew hand, (r)eplay the last hand, or (e)xit",
+            valid_check="nre",
+            retry_prompt="Sorry I didn't get that. Try again with n, r, or e."
+        )
         if player_response == 'e':
-            break
-        if player_response == 'n' or player_response == 'r':
-            while True:
-                player = input("Who's go is it (u)ser or (c)omputer: ").lower()
-                if player == 'u' or player == 'c':
-                    break
-                print("Sorry I didn't get that. Try again.")
-            if player_response == 'n':
-                old_hand = hand.copy()
-                final_score[player] += player_func[player](hand, word_dict, n)
-                hand = dealHand(n)
-            elif player_response == 'r':
-                final_score[player] += player_func[player](old_hand, word_dict, n)
-        else:
-            print("Sorry I didn't get that. Try again.")
-    print(f"Bye!\nYour final score is {final_score['u']}\nComputer's score is {final_score['c']}")
+            return f"Bye!\nYour final score is {score['u']}\nComputer's score is {score['c']}"
+        player = get_user_input(  # either (u)ser or(c)omputer
+            prompt="Who's go is it (u)ser or (c)omputer: ",
+            valid_check="uc",
+            retry_prompt="Sorry I didn't get that. Try again with u or c."
+        )
+        # new hand
+        if player_response == 'n':
+            old_hand = hand.copy()
+            score[player] += player_func[player](hand, word_dict, n)
+            # generate new hand for NEXT round
+            hand = dealHand(n)
+        # replay hand
+        elif player_response == 'r':
+            score[player] += player_func[player](old_hand, word_dict, n)
 
 
 #
@@ -166,4 +185,4 @@ def playGame(wordList):
 if __name__ == '__main__':
     wordList = loadWords()
 
-    playGame(wordList)
+    print(playGame(wordList))
