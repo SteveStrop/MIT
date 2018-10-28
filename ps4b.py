@@ -7,7 +7,7 @@ import time
 # Computer chooses a word
 #
 #
-def compChooseWord(hand, word_dict, n):
+def compChooseWord(hand, word_dict):
     """
     Given a hand and a wordList, find the word that gives
     the maximum value score, and return it.
@@ -46,7 +46,7 @@ def compChooseWord(hand, word_dict, n):
 #
 # Computer plays a hand
 #
-def compPlayHand(hand, word_dict, n):
+def compPlayHand(hand, word_dict):
     """
     Allows the computer to play the given hand, following the same procedure
     as playHand, except instead of the user choosing a word, the computer
@@ -73,7 +73,7 @@ def compPlayHand(hand, word_dict, n):
         print("Current Hand: ", end=' ')
         displayHand(hand)
         # computer's word
-        word = compChooseWord(hand, word_dict, n)
+        word = compChooseWord(hand, word_dict)
         # If the input is a single period:
         if word is None:
             # End the game (break out of the loop)
@@ -152,8 +152,6 @@ def playGame(wordList):
     # create dictionary of word scores to speed up computer player searches
     word_dict = {word: getWordScore(word, n) for word in wordList}
     # get a starting hand
-    hand = dealHand(n)
-    old_hand = hand.copy()
     # play the game until user hits e to exit
     # while True:
     #     player_response = get_user_input(
@@ -185,15 +183,14 @@ def playGame(wordList):
         )
         if player_response == 'e':
             return f"Bye!\nYour final score is {score['user']}\nComputer's score is {score['comp']}"
-        # user hand
-        print("\n"*5,"-" * 25, "YOUR TURN", "-" * 25, sep="")
-        old_hand = hand.copy()
-        score['user'] += player_func['user'](hand, word_dict, n)
-        # generate new hand for NEXT round
+        # get new hand for this round
         hand = dealHand(n)
-        # computer hand
+        # play user hand
+        print("\n"*5,"-" * 25, "YOUR TURN", "-" * 25, sep="")
+        score['user'] += player_func['user'](hand, word_dict, n)
+        # play computer hand
         print("-"*25,"COMPUTER'S TURN","-"*25,sep="")
-        score['comp'] += player_func['comp'](old_hand, word_dict, n)
+        score['comp'] += player_func['comp'](hand, word_dict)
 
 
 #
